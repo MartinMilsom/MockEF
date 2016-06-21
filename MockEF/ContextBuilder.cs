@@ -13,7 +13,12 @@ namespace MockEF
         private readonly TContext _dataContext = MockRepository.GenerateMock<TContext>();
         private readonly ConcurrentDictionary<Type, List<object>> _data = new ConcurrentDictionary<Type, List<object>>();
 
-        public ContextBuilder<TContext> Setup<T>(Function<TContext, IDbSet<T>> action, List<T> seedData = null) where T :class, new()
+        public TContext GetContext()
+        {
+            return _dataContext;
+        }
+
+        public ContextBuilder<TContext> Setup<T>(Function<TContext, IDbSet<T>> action, List<T> seedData = null) where T : class, new()
         {
             StubDbSet(action);
 
@@ -28,14 +33,20 @@ namespace MockEF
             return this;
         }
 
-        public TContext GetContext() 
+        private void StubDbSet<T>(Function<TContext, IDbSet<T>> action) where T : class, new()
         {
-            return _dataContext;
+            _dataContext.Stub(action)
+                .WhenCalled(x =>
+                {
+                    x.ReturnValue =
+                        GetDbSetTestDouble(_data.GetOrAdd(typeof(T), new List<object>()).Select(z => (T)z).ToList());
+
+                }).Return(default(IDbSet<T>));
         }
 
         private IDbSet<T> GetDbSetTestDouble<T>(IList<T> list) where T : class, new()
         {
-            var dbSet = ListToDbSet(list);
+            var dbSet = ToDbSet(list);
             
             StubAddMethod(dbSet);
             StubAttachMethod(dbSet);
@@ -98,13 +109,11 @@ namespace MockEF
             {
                 var args = ((object[]) x.Arguments[0]).ToList();
                 var source = _data.GetOrAdd(typeof (T), new List<object>());
-                var dbset = ListToDbSet(source);
-                T result = null;
+                var dbset = ToDbSet(source);
 
                 foreach (var record in dbset)
                 {
-                    var props = typeof (T).GetProperties();
-                    var keys = props.Where(prop => Attribute.IsDefined(prop, typeof (KeyAttribute)));
+                    var keys = typeof(T).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(KeyAttribute)));
                     var values = keys.Select(k => k.GetValue(record)).ToList();
 
                     args.OrderBy(o=>o);
@@ -112,26 +121,15 @@ namespace MockEF
 
                     if (args.All(arg => values.ElementAt(args.IndexOf(arg)).Equals(arg)))
                     {
-                        result = (T)record;
+                        x.ReturnValue = (T)record;
+                        break;
                     }
                 }
-
-                x.ReturnValue = result;
+                
             }).Return(default(T));
         }
 
-        private void StubDbSet<T>(Function<TContext, IDbSet<T>> action) where T : class, new()
-        {
-            _dataContext.Stub(action)
-                .WhenCalled(x =>
-                {
-                    x.ReturnValue =
-                        GetDbSetTestDouble(_data.GetOrAdd(typeof(T), new List<object>()).Select(z => (T)z).ToList());
-
-                }).Return(default(IDbSet<T>));
-        }
-
-        private IDbSet<T> ListToDbSet<T>(IList<T> data) where T : class
+        private static IDbSet<T> ToDbSet<T>(IEnumerable<T> data) where T : class
         {
             var queryable = data.AsQueryable();
 
