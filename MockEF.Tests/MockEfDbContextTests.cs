@@ -38,10 +38,9 @@ namespace MockEF.Tests
         [TestMethod]
         public void FindOnSeededData_ReturnsValue()
         {
-            var builder = new ContextBuilder<IMyContext>()
+            var target = new ContextBuilder<IMyContext>()
                 .Setup(x => x.Authors, new List<Author> { new Author { Id = 1, Name = "bob" }, new Author { Id = 2, Name = "dave" } })
-                .Setup(x => x.Books, new List<Book>());
-            var target = builder.GetContext();
+                .Setup(x => x.Books).GetContext();
 
             Assert.AreEqual(2, target.Authors.Count());
 

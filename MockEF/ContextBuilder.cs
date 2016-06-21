@@ -15,7 +15,7 @@ namespace MockEF
 
         public ContextBuilder<TContext> Setup<T>(Function<TContext, IDbSet<T>> action, List<T> seedData = null) where T :class, new()
         {
-            MockDbSet(action);
+            StubDbSet(action);
 
             if (seedData != null)
             {
@@ -37,16 +37,16 @@ namespace MockEF
         {
             var dbSet = ListToDbSet(list);
             
-            MockAddMethod(dbSet);
-            MockAttachMethod(dbSet);
-            MockCreateMethod(dbSet);
-            MockRemoveMethod(dbSet);
-            MockFindMethod(dbSet);
+            StubAddMethod(dbSet);
+            StubAttachMethod(dbSet);
+            StubCreateMethod(dbSet);
+            StubRemoveMethod(dbSet);
+            StubFindMethod(dbSet);
 
             return dbSet;
         }
 
-        private void MockAddMethod<T>(IDbSet<T> dbSet) where T : class, new()
+        private void StubAddMethod<T>(IDbSet<T> dbSet) where T : class, new()
         {
             dbSet.Stub(m => m.Add(Arg<T>.Is.Anything)).WhenCalled(x =>
             {
@@ -58,7 +58,7 @@ namespace MockEF
             }).Return(default(T));
         }
 
-        private void MockAttachMethod<T>(IDbSet<T> dbSet) where T : class, new()
+        private void StubAttachMethod<T>(IDbSet<T> dbSet) where T : class, new()
         {
             dbSet.Stub(m => m.Attach(Arg<T>.Is.Anything)).WhenCalled(x =>
             {
@@ -71,7 +71,7 @@ namespace MockEF
             }).Return(default(T));
         }
 
-        private static void MockCreateMethod<T>(IDbSet<T> dbSet) where T : class, new()
+        private static void StubCreateMethod<T>(IDbSet<T> dbSet) where T : class, new()
         {
             dbSet.Stub(m => m.Create()).WhenCalled(x =>
             {
@@ -80,7 +80,7 @@ namespace MockEF
             }).Return(default(T));
         }
 
-        private void MockRemoveMethod<T>(IDbSet<T> dbSet) where T : class, new()
+        private void StubRemoveMethod<T>(IDbSet<T> dbSet) where T : class, new()
         {
             dbSet.Stub(x => x.Remove(Arg<T>.Is.Anything)).WhenCalled(x =>
             {
@@ -92,7 +92,7 @@ namespace MockEF
             }).Return(null);
         }
 
-        private void MockFindMethod<T>(IDbSet<T> dbSet) where T : class, new()
+        private void StubFindMethod<T>(IDbSet<T> dbSet) where T : class, new()
         {
             dbSet.Stub(x => x.Find(Arg<object[]>.Is.Anything)).WhenCalled(x =>
             {
@@ -109,21 +109,26 @@ namespace MockEF
 
                     args.OrderBy(o=>o);
                     values.OrderBy(o => o);
-                    result = (T) record;
 
-                    if (args.Any(arg => !values.ElementAt(args.IndexOf(arg)).Equals(arg)))
+                    if (args.All(arg => values.ElementAt(args.IndexOf(arg)).Equals(arg)))
                     {
-                        result = null;
-                    }
-
-                    if (result != null)
-                    {
-                        break;
+                        result = (T)record;
                     }
                 }
 
                 x.ReturnValue = result;
             }).Return(default(T));
+        }
+
+        private void StubDbSet<T>(Function<TContext, IDbSet<T>> action) where T : class, new()
+        {
+            _dataContext.Stub(action)
+                .WhenCalled(x =>
+                {
+                    x.ReturnValue =
+                        GetDbSetTestDouble(_data.GetOrAdd(typeof(T), new List<object>()).Select(z => (T)z).ToList());
+
+                }).Return(default(IDbSet<T>));
         }
 
         private IDbSet<T> ListToDbSet<T>(IList<T> data) where T : class
@@ -138,17 +143,6 @@ namespace MockEF
             dbSet.Stub(m => m.GetEnumerator()).Return(queryable.GetEnumerator());
 
             return dbSet;
-        }
-
-        private void MockDbSet<T>(Function<TContext, IDbSet<T>> action) where T : class, new()
-        {
-            _dataContext.Stub(action)
-                .WhenCalled(x =>
-                {
-                    x.ReturnValue =
-                        GetDbSetTestDouble(_data.GetOrAdd(typeof (T), new List<object>()).Select(z => (T) z).ToList());
-
-                }).Return(default(IDbSet<T>));
         }
     }
 }
