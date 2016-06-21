@@ -28,3 +28,56 @@ Becuase Rhino.MockEF just provides a mock of the context, you can also perform a
 The library is dependant on Rhino.Mocks currently, and the returned context provided is built via Rhino's .GenerateMock<T>()
 
 View The MockEF.Tests project for example tests.
+
+###Setup
+
+All you need in order to start working with Rhino.MockEF is to implement a way of providing/injecting your mocked version of the context to your code. A great way to do this is to use a factory. Consider the following:
+
+```CSharp
+public interface IFactory
+{
+  IMyContext Create();
+}
+
+public class Factory : IFactory
+{
+  public IMyFactory Create()
+  {
+    return new MyContext();
+  }
+}
+
+//class that needs to use the context
+public class Example
+{
+  private IFactory _factory;
+  public Example(IFactory factory)
+  {
+    _factory = factory;
+  }
+  
+  public bool MethodThatUsesContext()
+  {
+    //Important. Your context interface MUST implement IDisposable. 
+    //Firstly because this won't work otherwise, Secondonly because - you should anyway.
+    using (var context = _factory.Create())
+    {
+      //Use context here.
+    }
+    return true;
+  }
+}
+
+//When testing you can then stub your factory to return the context you have set up, like so:
+var factory = MockRepository.GenerateMock<IFactory>();
+factory.Stub(x => x.Create()).Return(context); //context built using Rhino.MockEF.
+//then
+var result = new Example(factory).MethodThatUsesContext();
+Assert.IsTrue(result);
+
+
+//When running the code not in test, in you DI registrations you can use something like:
+container.Register<IFactory, Factory>();
+```
+
+voilà!
