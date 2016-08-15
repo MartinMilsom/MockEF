@@ -18,7 +18,7 @@ namespace MockEF
             return _dataContext;
         }
 
-        public ContextBuilder<TContext> Setup<T>(Function<TContext, IDbSet<T>> action, List<T> seedData = null) where T : class, new()
+        public ContextBuilder<TContext> Setup<T>(Func<TContext, IDbSet<T>> action, List<T> seedData = null) where T : class, new()
         {
             StubDbSet(action);
 
@@ -33,9 +33,9 @@ namespace MockEF
             return this;
         }
 
-        private void StubDbSet<T>(Function<TContext, IDbSet<T>> action) where T : class, new()
+        private void StubDbSet<T>(Func<TContext, IDbSet<T>> action) where T : class, new()
         {
-            _dataContext.Stub(action)
+            _dataContext.Stub(action.Invoke)
                 .WhenCalled(x =>
                 {
                     x.ReturnValue =
