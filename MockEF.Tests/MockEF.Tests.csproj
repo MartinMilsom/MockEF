@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MockEF.Tests</RootNamespace>
     <AssemblyName>MockEF.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -16,6 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -63,7 +64,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Data\MyContext.cs" />
-    <Compile Include="MockEfDbContextTests.cs" />
+    <Compile Include="RhinoMockEfDbContextTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +72,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MockEF.Rhino\MockEF.Rhino.csproj">
+      <Project>{bd49691f-28fd-43f6-9813-76f0cb7fadf8}</Project>
+      <Name>MockEF.Rhino</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MockEF\MockEF.csproj">
       <Project>{5ef4bd2b-f919-42fc-aba4-29a4046450c5}</Project>
       <Name>MockEF</Name>

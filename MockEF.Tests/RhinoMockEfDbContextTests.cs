@@ -6,7 +6,7 @@ using MockEF.Tests.Data;
 namespace MockEF.Tests
 {
     [TestClass]
-    public class MockEfDbContextTests
+    public class RhinoMockEfDbContextTests
     {
         [TestMethod]
         public void SeededDataIsFound()

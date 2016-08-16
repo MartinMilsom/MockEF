@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockEF", "MockEF\MockEF.csproj", "{5EF4BD2B-F919-42FC-ABA4-29A4046450C5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockEF.Tests", "MockEF.Tests\MockEF.Tests.csproj", "{8AB6DF3F-18FB-4384-A2E2-551364CA9A8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockEF.Rhino", "MockEF.Rhino\MockEF.Rhino.csproj", "{BD49691F-28FD-43F6-9813-76F0CB7FADF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{8AB6DF3F-18FB-4384-A2E2-551364CA9A8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AB6DF3F-18FB-4384-A2E2-551364CA9A8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AB6DF3F-18FB-4384-A2E2-551364CA9A8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD49691F-28FD-43F6-9813-76F0CB7FADF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD49691F-28FD-43F6-9813-76F0CB7FADF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD49691F-28FD-43F6-9813-76F0CB7FADF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD49691F-28FD-43F6-9813-76F0CB7FADF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
