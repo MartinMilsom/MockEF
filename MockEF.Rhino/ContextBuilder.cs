@@ -3,7 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using Rhino.Mocks;
 
-namespace MockEF
+namespace MockEF.Rhino
 {
     public class ContextBuilder<TContext> : ContextBuilderBase<TContext> where TContext : class
     {

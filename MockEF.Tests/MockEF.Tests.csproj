@@ -64,6 +64,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Data\MyContext.cs" />
+    <Compile Include="MockEfDbContextTests.cs" />
+    <Compile Include="MoqMockEfDbContextTests.cs" />
     <Compile Include="RhinoMockEfDbContextTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -72,6 +74,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MockEF.Moq\MockEF.Moq.csproj">
+      <Project>{bbf5dbd0-5d46-4aeb-8cd3-da34ad9713c7}</Project>
+      <Name>MockEF.Moq</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MockEF.Rhino\MockEF.Rhino.csproj">
       <Project>{bd49691f-28fd-43f6-9813-76f0cb7fadf8}</Project>
       <Name>MockEF.Rhino</Name>

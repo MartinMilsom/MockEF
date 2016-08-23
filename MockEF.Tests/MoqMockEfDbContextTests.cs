@@ -1,44 +1,44 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockEF.Tests.Data;
-using MockEF.Rhino;
+using MockEF.Moq;
 
 namespace MockEF.Tests
 {
     [TestClass]
-    public class RhinoMockEfDbContextTests
+    public class MoqMockEfDbContextTests
     {
         private MockEfDbContextTests _test = new MockEfDbContextTests();
 
         [TestMethod]
-        public void Rhino_SeededDataIsFound()
+        public void Moq_SeededDataIsFound()
         {
             var builder = new ContextBuilder<IMyContext>();
             _test.SeededDataIsFound(builder);
         }
 
         [TestMethod]
-        public void Rhino_DynamicallyAddedData_StaysPersisted()
+        public void Moq_DynamicallyAddedData_StaysPersisted()
         {
             var builder = new ContextBuilder<IMyContext>();
             _test.NewDynamicallyAddedData_StaysPersistedMethod(builder);
         }
 
         [TestMethod]
-        public void Rhino_FindOnSeededData_ReturnsValue()
+        public void Moq_FindOnSeededData_ReturnsValue()
         {
             var builder = new ContextBuilder<IMyContext>();
             _test.FindOnSeededData_ReturnsValue(builder);
         }
 
         [TestMethod]
-        public void Rhino_FindOnSeededData_WithCompositeKey_ReturnsValue()
+        public void Moq_FindOnSeededData_WithCompositeKey_ReturnsValue()
         {
             var builder = new ContextBuilder<IMyContext>();
             _test.FindOnSeededData_WithCompositeKey_ReturnsValue(builder);
         }
 
         [TestMethod]
-        public void Rhino_DeletedSeedData_StaysRemoved()
+        public void Moq_DeletedSeedData_StaysRemoved()
         {
             var builder = new ContextBuilder<IMyContext>();
             _test.DeletedSeedData_StaysRemoved(builder);
