@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace MockEF
 {
@@ -22,7 +23,7 @@ namespace MockEF
             return _dataContext;
         }
 
-        public ContextBuilderBase<TContext> Setup<T>(Func<TContext, IDbSet<T>> action, List<T> seedData = null) where T : class, new()
+        public ContextBuilderBase<TContext> Setup<T>(Expression<Func<TContext, IDbSet<T>>> action, List<T> seedData = null) where T : class, new()
         {
             StubDbSet(_dataContext, action);
 
@@ -110,7 +111,7 @@ namespace MockEF
             return ToDbSet(queryable);
         }
 
-        protected abstract void StubDbSet<T>(TContext dataContext, Func<TContext, IDbSet<T>> action) where T : class, new();
+        protected abstract void StubDbSet<T>(TContext dataContext, Expression<Func<TContext, IDbSet<T>>> action) where T : class, new();
         protected abstract IDbSet<T> ToDbSet<T>(IQueryable<T> queryable) where T : class;
         protected abstract void StubFindMethod<T>(IDbSet<T> dbSet) where T : class, new();
         protected abstract void StubRemoveMethod<T>(IDbSet<T> dbSet) where T : class, new();

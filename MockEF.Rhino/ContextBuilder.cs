@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using Rhino.Mocks;
+using System.Linq.Expressions;
 
 namespace MockEF.Rhino
 {
@@ -21,9 +22,9 @@ namespace MockEF.Rhino
             return dbSet;
         }
 
-        protected override void StubDbSet<T>(TContext dataContext, Func<TContext, IDbSet<T>> action) 
+        protected override void StubDbSet<T>(TContext dataContext, Expression<Func<TContext, IDbSet<T>>> action) 
         {
-            dataContext.Stub(action.Invoke)
+            dataContext.Stub(action.Compile().Invoke)
                 .WhenCalled(x =>
                 {
                     x.ReturnValue = PerformStubDbSet<T>();

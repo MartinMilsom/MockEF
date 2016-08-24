@@ -1,45 +1,71 @@
 ﻿using System;
 using System.Linq;
+using Moq;
+using System.Data.Entity;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace MockEF.Moq
 {
     public class ContextBuilder<TContext> : ContextBuilderBase<TContext> where TContext : class
     {
-        public ContextBuilder() : base(null) { }
-
-        protected override void StubAddMethod<T>(System.Data.Entity.IDbSet<T> dbSet)
+        public ContextBuilder() : base(new Mock<TContext>().Object)
         {
-            throw new NotImplementedException();
         }
 
-        protected override void StubAttachMethod<T>(System.Data.Entity.IDbSet<T> dbSet)
+        protected override IDbSet<T> ToDbSet<T>(IQueryable<T> queryable)
         {
-            throw new NotImplementedException();
+            var dbSet = new Mock<IDbSet<T>>();
+            dbSet.As<IQueryable>();
+
+            dbSet.Setup(m => m.Provider).Returns(queryable.Provider);
+            dbSet.Setup(m => m.Expression).Returns(queryable.Expression);
+            dbSet.Setup(m => m.ElementType).Returns(queryable.ElementType);
+            dbSet.Setup(m => m.GetEnumerator()).Returns(queryable.GetEnumerator());
+
+            return dbSet.Object;
         }
 
-        protected override void StubCreateMethod<T>(System.Data.Entity.IDbSet<T> dbSet)
+        protected override void StubDbSet<T>(TContext dataContext, Expression<Func<TContext, IDbSet<T>>> action)
         {
-            throw new NotImplementedException();
+            var mock = Mock.Get<TContext>(dataContext);
+            mock.SetupGet(action)
+                .Returns(() => PerformStubDbSet<T>());
         }
 
-        protected override void StubDbSet<T>(TContext dataContext, Func<TContext, System.Data.Entity.IDbSet<T>> action)
+        protected override void StubAddMethod<T>(IDbSet<T> dbSet)
         {
-            throw new NotImplementedException();
+            var mock = Mock.Get(dbSet);
+            mock.Setup(x => x.Add(It.IsAny<T>()))
+              .Returns<T>(inputParameter => PerformAddMethod(inputParameter));
         }
 
-        protected override void StubFindMethod<T>(System.Data.Entity.IDbSet<T> dbSet)
+        protected override void StubAttachMethod<T>(IDbSet<T> dbSet)
         {
-            throw new NotImplementedException();
+            var mock = Mock.Get(dbSet);
+            mock.Setup(x => x.Attach(It.IsAny<T>()))
+             .Returns<T>(inputParameter => PerformAddMethod(inputParameter));
         }
 
-        protected override void StubRemoveMethod<T>(System.Data.Entity.IDbSet<T> dbSet)
+        protected override void StubCreateMethod<T>(IDbSet<T> dbSet)
         {
-            throw new NotImplementedException();
+            var mock = Mock.Get(dbSet);
+            mock.Setup(x => x.Create())
+             .Returns(() => PerformCreateMethod<T>());
         }
 
-        protected override System.Data.Entity.IDbSet<T> ToDbSet<T>(IQueryable<T> queryable)
+        protected override void StubFindMethod<T>(IDbSet<T> dbSet)
         {
-            throw new NotImplementedException();
+            var mock = Mock.Get(dbSet);
+            mock.Setup(x => x.Find(It.IsAny<object[]>()))
+               .Returns<object[]>(x => PerformFindMethod<T>(x.ToList()));
+        }
+
+        protected override void StubRemoveMethod<T>(IDbSet<T> dbSet)
+        {
+            var mock = Mock.Get(dbSet);
+            mock.Setup(x => x.Remove(It.IsAny<T>()))
+              .Returns<T>(x => PerformRemoveMethod<T>(x));
         }
     }
 }
