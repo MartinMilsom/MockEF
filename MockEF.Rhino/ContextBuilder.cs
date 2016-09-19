@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using Rhino.Mocks;
 using System.Linq.Expressions;
+using System.Data.Entity.Infrastructure;
 
 namespace MockEF.Rhino
 {
@@ -12,9 +13,12 @@ namespace MockEF.Rhino
 
         protected override IDbSet<T> ToDbSet<T>(IQueryable<T> queryable)
         {
-            var dbSet = MockRepository.GenerateMock<IDbSet<T>, IQueryable>();
+            var dbSet = MockRepository.GenerateMock<IDbSet<T>, IQueryable, IDbAsyncEnumerable<T>> ();
 
-            dbSet.Stub(m => m.Provider).Return(queryable.Provider);
+            ((IDbAsyncEnumerable<T>)dbSet).Stub(m => m.GetAsyncEnumerator())
+                .Return(new TestDbAsyncEnumerator<T>(queryable.GetEnumerator()));
+
+            ((IQueryable)dbSet).Stub(m => m.Provider).Return(new TestDbAsyncQueryProvider<T>(queryable.Provider));
             dbSet.Stub(m => m.Expression).Return(queryable.Expression);
             dbSet.Stub(m => m.ElementType).Return(queryable.ElementType);
             dbSet.Stub(m => m.GetEnumerator()).Return(queryable.GetEnumerator());

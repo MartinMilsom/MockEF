@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockEF.Tests.Data;
 using MockEF.Rhino;
+using System.Threading.Tasks;
 
 namespace MockEF.Tests
 {
@@ -14,6 +15,13 @@ namespace MockEF.Tests
         {
             var builder = new ContextBuilder<IMyContext>();
             _test.SeededDataIsFound(builder);
+        }
+
+        [TestMethod]
+        public async Task Rhino_SeededDataIsFoundAsync()
+        {
+            var builder = new ContextBuilder<IMyContext>();
+            await _test.SeededDataIsFoundAsync(builder);
         }
 
         [TestMethod]

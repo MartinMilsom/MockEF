@@ -1,8 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockEF.Tests.Data;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-
+using System.Threading.Tasks;
 
 namespace MockEF.Tests
 {
@@ -17,6 +18,17 @@ namespace MockEF.Tests
             var data = target.Authors.Where(x => x.Name == "bob");
 
             Assert.AreEqual(1, data.Count());
+        }
+
+        internal async Task SeededDataIsFoundAsync(ContextBuilderBase<IMyContext> builder)
+        {
+            builder.Setup(x => x.Authors, new List<Author> { new Author { Name = "bob" } })
+                .Setup(x => x.Books, new List<Book>());
+            var target = builder.GetContext();
+
+            var data = await target.Authors.Where(x => x.Name == "bob").ToListAsync();
+
+            Assert.AreEqual(1, data.Count);
         }
 
         internal void DeletedSeedData_StaysRemoved(ContextBuilderBase<IMyContext> builder) 
